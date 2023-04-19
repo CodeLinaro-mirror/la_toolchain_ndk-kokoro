@@ -60,6 +60,19 @@ def get_repo_name(path: Path) -> str:
     return name
 
 
+def git_add_safe_directory() -> None:
+    path_to_add = '*'
+    current_dump = subprocess.run(['git', 'config', '--global', 'safe.directory'],
+                                  stdout=subprocess.PIPE, encoding='utf-8')
+    if path_to_add in current_dump.stdout.splitlines():
+        return
+
+    # If the entry already exists, then invoking `git config --add` again will
+    # add more and more entries.
+    subprocess.run(['git', 'config', '--global', '--add', 'safe.directory', path_to_add],
+                   check=True)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', default='.')
@@ -77,6 +90,12 @@ def main() -> None:
           <default revision="master" remote="aosp" sync-j="4" />
           <superproject name="platform/superproject" remote="aospsuperproject" />
     ''')
+
+    # Disable git's "safe directory" checking because, in the Kokoro docker
+    # image for Windows, the git directories belong to a different user than the
+    # current one. Try to do this only when in the Kokoro environment.
+    if sys.platform == 'win32' and os.getenv('KOKORO_JOB_NAME'):
+        git_add_safe_directory()
 
     os.chdir(root)
     repos = [Path(parent) for (parent, sub, _) in os.walk('.') if '.git' in sub]
