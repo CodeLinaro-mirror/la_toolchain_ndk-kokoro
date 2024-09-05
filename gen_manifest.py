@@ -73,6 +73,21 @@ def git_add_safe_directory() -> None:
                    check=True)
 
 
+def is_docker() -> bool:
+    """Returns True when running within a docker container."""
+    if Path("/.dockerenv").exists():
+        return True
+
+    # Windows doesn't include the same .dockerenv file at the root of the
+    # drive. The most correct way to check this appears to be
+    # HKLM\System\CurrentControlSet\Control\ContainerType, but who really wants
+    # to deal with the registry? Windows+Kokoro is good enough for now.
+    if sys.platform == 'win32' and os.getenv('KOKORO_JOB_NAME'):
+        return True
+
+    return False
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', default='.')
@@ -91,10 +106,10 @@ def main() -> None:
           <superproject name="platform/superproject" remote="aospsuperproject" />
     ''')
 
-    # Disable git's "safe directory" checking because, in the Kokoro docker
-    # image for Windows, the git directories belong to a different user than the
-    # current one. Try to do this only when in the Kokoro environment.
-    if sys.platform == 'win32' and os.getenv('KOKORO_JOB_NAME'):
+    # Disable git's "safe directory" checking when running in a Docker
+    # container. This is needed because the git directories belong to a
+    # different user than the current one.
+    if is_docker():
         git_add_safe_directory()
 
     os.chdir(root)
