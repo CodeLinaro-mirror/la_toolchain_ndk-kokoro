@@ -113,7 +113,7 @@ def main() -> None:
         git_add_safe_directory()
 
     os.chdir(root)
-    repos = [Path(parent) for (parent, sub, _) in os.walk('.') if '.git' in sub]
+    repos = [Path(parent) for (parent, sub, _) in os.walk('.') if '.git' in sub and parent != './.repo/repo']
 
     for path in sorted(repos):
         revision = get_repo_revision(path)
