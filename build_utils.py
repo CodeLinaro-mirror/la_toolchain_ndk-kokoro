@@ -16,6 +16,7 @@
 import enum
 import os
 from pathlib import Path
+import platform
 import shlex
 import shutil
 import subprocess
@@ -23,17 +24,22 @@ import sys
 from typing import List, Union
 import zipfile
 
+TOP = Path(__file__).parent.parent.parent
+
 @enum.unique
 class Host(enum.Enum):
     """Enumeration of supported hosts."""
     Darwin = 'darwin'
-    Linux = 'linux'
+    Linux = 'linux-x86'
+    LinuxArm64 = 'linux-arm64'
     Windows = 'windows'
 
 
 def get_default_host() -> Host:
     """Returns the Host matching the current machine."""
     if sys.platform.startswith('linux'):
+        if platform.machine() == 'aarch64':
+            return Host.LinuxArm64
         return Host.Linux
     if sys.platform.startswith('darwin'):
         return Host.Darwin
@@ -48,7 +54,7 @@ def create_new_dir(path: Path) -> None:
     path.mkdir(parents=True)
 
 
-def run_cmd(args: List[Union[str, Path]], cwd: Path = None) -> None:
+def run_cmd(args: List[Union[str, Path]], cwd: Path = None, env = None) -> None:
     if cwd is not None:
         print(f'cd {cwd}')
     str_args = [str(arg) for arg in args]
@@ -57,7 +63,7 @@ def run_cmd(args: List[Union[str, Path]], cwd: Path = None) -> None:
     else:
         print(' '.join([shlex.quote(arg) for arg in str_args]))
     sys.stdout.flush()
-    subprocess.run(str_args, cwd=cwd, check=True)
+    subprocess.run(str_args, cwd=cwd, env=env, check=True)
 
 
 def zip_dir(root: Path, out_file: Path) -> None:
@@ -73,3 +79,22 @@ def zip_dir_to_zip(root: Path, zip_obj: zipfile.ZipFile) -> None:
             install_file = Path(parent) / file
             rel_file = install_file.relative_to(root)
             zip_obj.write(install_file, rel_file)
+
+
+class LinuxArm64Musl:
+    SYSROOT = TOP / 'prebuilts/build-tools/sysroots/aarch64-unknown-linux-musl'
+    LIBC_MUSL = SYSROOT / 'lib/libc_musl.so'
+    LIBC_MUSL_NOTICES = [
+        SYSROOT / 'LICENSE',
+        SYSROOT / 'NOTICE.bionic',
+        SYSROOT / 'NOTICE.zlib',
+    ]
+    CLANG_VERSION = 'r584948b'
+    CLANG_DIR = TOP / 'prebuilts/clang/host/linux-arm64' / ('clang-' + CLANG_VERSION)
+    CC = CLANG_DIR / 'bin/clang'
+    CXX = CLANG_DIR / 'bin/clang++'
+    AR = CLANG_DIR / 'bin/llvm-ar'
+    RANLIB = CLANG_DIR / 'bin/llvm-ranlib'
+    LDFLAGS = f'--sysroot={SYSROOT} --target=aarch64-unknown-linux-musl -stdlib=libc++ -rtlib=compiler-rt -fuse-ld=lld'
+    CFLAGS =  f'--sysroot={SYSROOT} --target=aarch64-unknown-linux-musl -stdlib=libc++'
+    LD_LIBRARY_PATH = SYSROOT / 'lib'
