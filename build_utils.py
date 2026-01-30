@@ -29,10 +29,10 @@ TOP = Path(__file__).parent.parent.parent
 @enum.unique
 class Host(enum.Enum):
     """Enumeration of supported hosts."""
-    Darwin = 'darwin'
+    Darwin = 'darwin-x86'
     Linux = 'linux-x86'
     LinuxArm64 = 'linux-arm64'
-    Windows = 'windows'
+    Windows = 'windows-x86'
 
 
 def get_default_host() -> Host:
