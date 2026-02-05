@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM --platform=$BUILDPLATFORM us-central1-docker.pkg.dev/kokoro-container-bakery/kokoro/ubuntu/ubuntu2404/full:next
 
 # Install dependencies
 RUN apt-get update \
