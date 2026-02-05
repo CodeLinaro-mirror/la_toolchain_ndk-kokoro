@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM us-central1-docker.pkg.dev/kokoro-container-bakery/kokoro/ubuntu/ubuntu2404/full:next
+FROM --platform=$BUILDPLATFORM us-central1-docker.pkg.dev/kokoro-container-bakery/kokoro/ubuntu/ubuntu2004/full:current
 
 # Install dependencies
 RUN apt-get update \
