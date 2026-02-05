@@ -2,8 +2,8 @@ FROM --platform=$BUILDPLATFORM us-central1-docker.pkg.dev/kokoro-container-baker
 
 # Remove some package sources that we don't need that are having GPG issues.
 # These can be removed once the base images have been updated.
-rm -f /etc/apt/sources.list.d/yarn.list
-rm -f /etc/apt/sources.list.d/nodesource.list
+RUN rm -f /etc/apt/sources.list.d/yarn.list
+RUN rm -f /etc/apt/sources.list.d/nodesource.list
 
 # Install dependencies
 RUN apt-get update \
