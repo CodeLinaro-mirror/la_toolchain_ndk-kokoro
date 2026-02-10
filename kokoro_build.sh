@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 set -x
 
@@ -14,12 +14,12 @@ entry_point=$2
 # to create the sibling container.
 if [ "$(uname)" == "Linux" -a "$SKIP_DOCKER" == "" ]; then
     if [ -n "${KOKORO_HOST_ROOT_DIR}" ]; then
-        host_top=${KOKORO_HOST_ROOT_DIR}/$(realpath --relative-to="${KOKORO_ROOT_DIR}" $top)
+        host_top=${KOKORO_HOST_ROOT_DIR}/${top#"${KOKORO_ROOT_DIR}"}
     else
         host_top=$top
     fi
     container_build_root=/build
-    entry_point_in_container=${container_build_root}/$(realpath --relative-to="$top" $entry_point)
+    entry_point_in_container=${container_build_root}/${entry_point#"${top}"}
     docker_image=ndk-kokoro
     docker build -t $docker_image $docker_dir
     export SKIP_DOCKER=1
