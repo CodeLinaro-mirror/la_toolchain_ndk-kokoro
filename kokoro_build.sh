@@ -21,7 +21,7 @@ if [ "$(uname)" == "Linux" -a "$SKIP_DOCKER" == "" ]; then
     container_build_root=/build
     entry_point_in_container=${container_build_root}/${entry_point#"${top}"}
     docker_image=ndk-kokoro
-    docker build -t $docker_image $docker_dir
+    docker build --network=host -t $docker_image $docker_dir
     export SKIP_DOCKER=1
     docker run -v$host_top:$container_build_root -eKOKORO_BUILD_ID -eSKIP_DOCKER \
       --entrypoint $entry_point_in_container \
