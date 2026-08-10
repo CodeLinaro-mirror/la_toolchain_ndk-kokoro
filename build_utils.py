@@ -86,8 +86,6 @@ class LinuxArm64Musl:
     LIBC_MUSL = SYSROOT / 'lib/libc_musl.so'
     LIBC_MUSL_NOTICES = [
         SYSROOT / 'LICENSE',
-        SYSROOT / 'NOTICE.bionic',
-        SYSROOT / 'NOTICE.zlib',
     ]
     CLANG_VERSION = 'r584948b'
     CLANG_DIR = TOP / 'prebuilts/clang/host/linux-arm64' / ('clang-' + CLANG_VERSION)
