@@ -84,6 +84,7 @@ def zip_dir_to_zip(root: Path, zip_obj: zipfile.ZipFile) -> None:
 class LinuxArm64Musl:
     SYSROOT = TOP / 'prebuilts/build-tools/sysroots/aarch64-unknown-linux-musl'
     LIBC_MUSL = SYSROOT / 'lib/libc_musl.so'
+    LIBJEMALLOC = SYSROOT / 'lib/libjemalloc5.so'
     LIBC_MUSL_NOTICES = [
         SYSROOT / 'LICENSE',
     ]
