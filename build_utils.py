@@ -94,6 +94,6 @@ class LinuxArm64Musl:
     CXX = CLANG_DIR / 'bin/clang++'
     AR = CLANG_DIR / 'bin/llvm-ar'
     RANLIB = CLANG_DIR / 'bin/llvm-ranlib'
-    LDFLAGS = f'--sysroot={SYSROOT} --target=aarch64-unknown-linux-musl -stdlib=libc++ -rtlib=compiler-rt -fuse-ld=lld'
+    LDFLAGS = f'--sysroot={SYSROOT} --target=aarch64-unknown-linux-musl -stdlib=libc++ -rtlib=compiler-rt -fuse-ld=lld -ljemalloc5'
     CFLAGS =  f'--sysroot={SYSROOT} --target=aarch64-unknown-linux-musl -stdlib=libc++'
     LD_LIBRARY_PATH = SYSROOT / 'lib'
